@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sin conexión — Ascua</title>
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0; min-height: 100dvh; display: grid; place-items: center;
+        background: #0f0e0d; color: #f5efe6; padding: 24px;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      .caja { max-width: 22rem; text-align: center; }
+      .marca { color: #b87333; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+      h1 { font-size: 1.25rem; font-weight: 600; margin: 0.75rem 0 0.5rem; }
+      p { margin: 0; font-size: 0.875rem; line-height: 1.6; color: #a8a29e; }
+      button {
+        margin-top: 1.5rem; padding: 0.625rem 1.25rem; border-radius: 9999px;
+        border: 1px solid rgba(184,115,51,0.6); background: transparent;
+        color: #f5efe6; font-size: 0.875rem; cursor: pointer;
+      }
+      button:hover { background: #b87333; color: #0f0e0d; }
+    </style>
+  </head>
+  <body>
+    <div class="caja">
+      <p class="marca">Ascua</p>
+      <h1>Sin conexión</h1>
+      <p>El panel necesita internet para mostrar tu carta actualizada. Revisa tu conexión y vuelve a intentarlo.</p>
+      <button type="button" onclick="location.reload()">Reintentar</button>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+# CN-001: sin esto, `COPY apps/worker ./apps/worker` en el Dockerfile del
+# worker mete .env/.env.local (con SUPABASE_SERVICE_ROLE_KEY, HF_TOKEN,
+# MESHY_API_KEY, REVALIDATE_SECRET reales) directo en una capa de la imagen,
+# recuperable con `docker history`/`docker save` aunque nunca se use ese
+# valor en runtime. El build context es la raíz del repo (ver comentario en
+# apps/worker/Dockerfile), así que este .dockerignore vive acá, no en
+# apps/worker/.
+**/.env
+**/.env.*
+!**/.env.example
+
+**/node_modules
+**/.git
+**/.next
+**/dist
+**/.pnpm-store

@@ -1,0 +1,38 @@
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+
+# builds
+dist/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.vercel
+.env*
+
+# CN-019: llaves/certificados — ninguno existe todavía, endurecimiento
+# preventivo para que no se cuele uno por accidente más adelante.
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+
+# Cache incremental de TypeScript: se regenera en cada compilacion.
+*.tsbuildinfo

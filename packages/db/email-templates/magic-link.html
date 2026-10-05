@@ -1,0 +1,23 @@
+<!--
+  Plantilla "Magic Link" de Supabase (Authentication → Email Templates).
+  Asunto sugerido: Tu código de acceso a Ascua: {{ .Token }}
+
+  Lleva el código y el enlace. El código es el que funciona siempre: el
+  enlace sólo sirve si se abre en el mismo navegador que lo pidió, y en
+  iPhone la app instalada no comparte datos con Safari.
+-->
+<div style="margin:0;padding:32px 16px;background:#0f0e0d;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <div style="max-width:440px;margin:0 auto;background:#141210;border:1px solid #4a2f15;border-radius:16px;padding:32px 28px;">
+    <p style="margin:0;font-family:Georgia,serif;font-size:20px;font-weight:600;color:#f5f1ea;">Ascua <span style="font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;font-weight:400;color:#a8a29a;">panel</span></p>
+
+    <p style="margin:28px 0 8px;font-size:15px;line-height:1.6;color:#a8a29a;">Tu código de acceso es:</p>
+
+    <p style="margin:0;padding:16px 0;text-align:center;font-family:'SFMono-Regular',Consolas,monospace;font-size:34px;letter-spacing:10px;font-weight:600;color:#d6a468;background:#1d1a17;border-radius:12px;">{{ .Token }}</p>
+
+    <p style="margin:20px 0 0;font-size:14px;line-height:1.6;color:#a8a29a;">Escríbelo en la pantalla de acceso. Sirve una sola vez y caduca en unos minutos.</p>
+
+    <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#a8a29a;">¿Abriste este correo en el mismo teléfono donde pediste el código? También puedes <a href="{{ .ConfirmationURL }}" style="color:#d6a468;">entrar con este enlace</a>.</p>
+
+    <p style="margin:28px 0 0;padding-top:20px;border-top:1px solid #28241f;font-size:12px;line-height:1.6;color:#6f6a64;">Si no pediste este código, ignora este correo. Nadie puede entrar sin él.</p>
+  </div>
+</div>
