@@ -4,6 +4,13 @@
 
 ---
 
+> ⚠️ **Documento histórico de referencia (plan original de ARFOODS).**
+> El plan vigente es `docs/PLAN-IMPLEMENTACION.md`. Aquí se conservan el *porqué*
+> de las decisiones, la sección legal (§6) y el checklist de demo (Fase 8).
+> Si algo contradice al plan vigente, manda el plan vigente.
+
+---
+
 ## 0. Aclaración importante antes de empezar
 
 **El código QR no se regenera cuando actualizas el menú.** El QR apunta a una URL permanente (`https://tudominio.com/m/la-fonda`) y el contenido detrás de esa URL se actualiza solo. Un restaurante imprime su QR una única vez, en la vida.

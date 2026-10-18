@@ -19,3 +19,16 @@ const GENERATORS: Record<string, Generator> = {
 };
 
 export const generator: Generator = GENERATORS[process.env.GENERATOR ?? 'instantmesh'] ?? instantmeshGenerator;
+
+/**
+ * Busca un generador por nombre. Lo usa el CLI `build-asset` (A-202),
+ * que recibe el generador como argumento (`--generador`) en vez de la
+ * variable de entorno `GENERATOR` que usa el worker en loop.
+ *
+ * @param name - Nombre del generador ('instantmesh', 'triposr', 'meshy').
+ * Si falta o no existe, devuelve InstantMesh (el mismo default que `generator`).
+ */
+export function getGeneratorByName(name?: string): Generator {
+  if (!name) return instantmeshGenerator;
+  return GENERATORS[name] ?? instantmeshGenerator;
+}

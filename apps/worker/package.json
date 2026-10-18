@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "asset:build": "tsx src/cli/build-asset.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest run"
