@@ -50,7 +50,22 @@ A-202/A-204 — CLI `build-asset` con escala real por plato. **Estado:** CLI con
 - Seguridad: ya corregidos CN-001/002/003/005/007/009/010/014/016/018 del reporte 2026-08-28. Re-auditar en A-004.
 
 ## Bloqueos
-- Ninguno para el código. La generación real de los 5 modelos está bloqueada en que Juan corra el script con su `HF_TOKEN` (ningún agente debe verlo ni pedirlo).
+- Ninguno para el código (ver fix de `optimize.ts` más abajo). La
+  generación de 3 de los 5 modelos de la demo (`vieiras`, `langosta`,
+  `pato`) está bloqueada por la cuota diaria gratuita de GPU (ZeroGPU)
+  de Hugging Face en la cuenta de Juan — no por un bug; el Space lo
+  reporta explícitamente. `filete` y `tagliatelle` sí se generaron bien.
+  Se resuelve solo esperando a que la cuota se renueve y reintentando
+  `scripts/tools/generar-modelos-demo.ts` del repo PAGINA.
+
+## Corregido al usarlo por primera vez en Windows (2026-10-18)
+- `optimizeGlb` fallaba con `ENOENT` (shim `.cmd` de `gltf-transform` no
+  resuelto sin shell) y luego con `MODULE_NOT_FOUND` (el mismo shim roto
+  al invocarse anidado dentro de otra línea de comando). Corregido en
+  `pipeline/optimize.ts`: invoca el archivo real del CLI con `node` en
+  vez del shim. Verificado con una ejecución real end-to-end (no mocks).
+  Esto era imposible de ver antes porque el worker real solo corre
+  dentro de Docker/Linux, donde el binario nativo no tiene este problema.
 
 ## Pendientes detectados
 - `PROJECT_CONTEXT.md` desactualizado (A-003).
