@@ -1,0 +1,28 @@
+# Imagen mínima solo para convertir .glb a .usdz con usd_from_gltf (A-202).
+#
+# La usa `src/cli/convert-usdz-docker.ts` desde el CLI "Estudio 3D"
+# (`build-asset.ts`), para generar los modelos de la demo a mano sin
+# levantar el worker completo (que trae Chromium, el cliente de Supabase
+# y el loop de jobs — mucho más pesado y lento de construir solo para
+# convertir un archivo).
+#
+# Se construye una sola vez, desde la raíz del monorepo:
+#   docker build -f apps/worker/Dockerfile.usdz -t menu-ar-usdz-tool .
+#
+# Mismo digest pinneado que usa apps/worker/Dockerfile (CN-007: una tag
+# flotante puede apuntar a contenido distinto sin aviso).
+FROM marlon360/usd-from-gltf@sha256:98905e9ee0df44100ca7cbc2d39972a131944b7b378fe750e248c3390101c082 AS usdtools
+
+FROM debian:bookworm-slim
+
+COPY --from=usdtools /usr/src/app/USDinst /usr/src/app/USDinst
+COPY --from=usdtools /usr/local/ufg /usr/local/ufg
+COPY --from=usdtools /usr/local/lib/libpython2.7.so.1.0 /usr/local/lib/libpython2.7.so.1.0
+ENV LD_LIBRARY_PATH=/usr/src/app/USDinst/lib:/usr/local/lib
+ENV PATH="/usr/local/ufg/bin:${PATH}"
+RUN ldconfig
+
+# Sin USER: contenedor desechable (--rm), corre una sola conversión y
+# muere; no hay proceso de larga duración como en el worker real que
+# justificaría endurecerlo con un usuario sin privilegios.
+ENTRYPOINT ["usd_from_gltf"]

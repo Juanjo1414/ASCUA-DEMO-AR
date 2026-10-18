@@ -11,9 +11,15 @@ import { WorkerError } from '../errors.js';
 // tamaño físico razonable para un plato de comida servido, y se planta
 // la base en Y=0 para que el AR lo apoye sobre la mesa en vez de
 // dejarlo flotando.
-const TARGET_SIZE_METERS = 0.28;
+const DEFAULT_TARGET_SIZE_METERS = 0.28;
 
-export async function normalizeScale(glb: Buffer): Promise<Buffer> {
+// El CLI `build-asset` (A-202/A-204) pasa la medida real de cada plato
+// (`--escala-cm`); sin ese segundo argumento se mantiene el valor por
+// default que ya usaba el worker antes de A-204.
+export async function normalizeScale(
+  glb: Buffer,
+  targetSizeMeters: number = DEFAULT_TARGET_SIZE_METERS
+): Promise<Buffer> {
   try {
     const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
     const document = await io.readBinary(glb);
@@ -36,7 +42,7 @@ export async function normalizeScale(glb: Buffer): Promise<Buffer> {
       throw new WorkerError('PIPELINE_NORMALIZE_SCALE_EMPTY_BOUNDS', 'El modelo no tiene geometría con la que calcular su tamaño.');
     }
 
-    const scale = TARGET_SIZE_METERS / maxDim;
+    const scale = targetSizeMeters / maxDim;
     const centerX = (minX + maxX) / 2;
     const centerZ = (minZ + maxZ) / 2;
 
@@ -57,4 +63,28 @@ export async function normalizeScale(glb: Buffer): Promise<Buffer> {
       { cause }
     );
   }
+}
+
+/**
+ * Mide el ancho, alto y profundidad (en centímetros) de un .glb ya
+ * normalizado. Lo usa `build-asset.ts` (A-202) para registrar en
+ * `manifest.json` el tamaño real con el que terminó el modelo — no
+ * siempre coincide exacto con `--escala-cm` porque esa medida es el lado
+ * más largo, y el plato puede ser más angosto en los otros dos ejes.
+ */
+export async function measureBoundsCm(
+  glb: Buffer
+): Promise<{ widthCm: number; heightCm: number; depthCm: number }> {
+  const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
+  const document = await io.readBinary(glb);
+  const scene = document.getRoot().listScenes()[0];
+  const { min, max } = getBounds(scene);
+  const [minX, minY, minZ] = min;
+  const [maxX, maxY, maxZ] = max;
+
+  return {
+    widthCm: (maxX - minX) * 100,
+    heightCm: (maxY - minY) * 100,
+    depthCm: (maxZ - minZ) * 100,
+  };
 }
