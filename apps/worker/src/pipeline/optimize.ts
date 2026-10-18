@@ -2,11 +2,33 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { writeFile, readFile, unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { createRequire } from 'node:module';
 import { WorkerError } from '../errors.js';
 
 const execFileAsync = promisify(execFile);
+
+// Se invoca el archivo real del CLI con `node` en vez del binario
+// `gltf-transform` instalado en node_modules/.bin: en Windows ese
+// binario es un shim .cmd generado por pnpm, y Node no resuelve
+// PATHEXT (.cmd/.bat) al lanzar un proceso sin pasar por una shell — y
+// pasar por una shell rompe el propio shim (calcula su carpeta con
+// %~dp0, que sale mal cuando el comando llega anidado dentro de otra
+// línea con comillas). `node` es un ejecutable nativo: ninguno de los
+// dos problemas aplica, y los argumentos llegan intactos sin tener que
+// armar ni escapar una línea de comando.
+//
+// El paquete @gltf-transform/cli solo expone "." (dist/cli.mjs) en su
+// "exports" de npm, así que require.resolve('@gltf-transform/cli/bin/cli.js')
+// falla (ERR_PACKAGE_PATH_NOT_EXPORTED). bin/cli.js —el archivo que de
+// verdad ejecuta el comando (dist/cli.mjs solo expone el programa, no lo
+// corre)— vive dos carpetas arriba del que sí está exportado, tal como
+// lo documenta el propio package.json del paquete
+// ("bin": { "gltf-transform": "./bin/cli.js" }).
+const require = createRequire(import.meta.url);
+const gltfTransformPackageRoot = dirname(dirname(require.resolve('@gltf-transform/cli')));
+const gltfTransformCliPath = join(gltfTransformPackageRoot, 'bin/cli.js');
 
 // gltf-transform CLI como subproceso: 15 MB → 1-2 MB (sección 1 del
 // plan). Necesita el binario `gltf-transform` en el PATH — lo instala el
@@ -47,7 +69,8 @@ export async function optimizeGlb(rawGlb: Buffer): Promise<Buffer> {
 
   try {
     try {
-      await execFileAsync('gltf-transform', [
+      await execFileAsync('node', [
+        gltfTransformCliPath,
         'optimize',
         inputPath,
         outputPath,
@@ -63,7 +86,7 @@ export async function optimizeGlb(rawGlb: Buffer): Promise<Buffer> {
       // tocar texturas conserva casi toda la ganancia; abortar el job
       // entero por esto no.
       try {
-        await execFileAsync('gltf-transform', ['optimize', inputPath, outputPath, ...BASE_ARGS]);
+        await execFileAsync('node', [gltfTransformCliPath, 'optimize', inputPath, outputPath, ...BASE_ARGS]);
       } catch {
         throw new WorkerError(
           'PIPELINE_OPTIMIZE_GLTF_TRANSFORM_FAILED',
